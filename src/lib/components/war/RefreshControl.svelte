@@ -84,11 +84,11 @@
 			type="button"
 			disabled={majorOrders.refreshing || waiting}
 			onclick={() => majorOrders.load(true)}
-			class="relative flex items-center gap-2 overflow-hidden border border-line px-3 py-1 font-display text-xs font-semibold tracking-widest text-text uppercase transition-colors enabled:hover:border-accent enabled:hover:text-accent disabled:cursor-not-allowed disabled:text-text-muted"
+			class="relative inline-flex h-9 w-44 shrink-0 items-center justify-center gap-2 overflow-hidden border border-line px-3 font-display text-xs leading-none font-semibold tracking-widest text-text uppercase transition-colors enabled:hover:border-accent enabled:hover:text-accent disabled:cursor-not-allowed disabled:text-text-muted"
 		>
 			<svg
 				viewBox="0 0 16 16"
-				class="size-3.5 {majorOrders.refreshing ? 'animate-spin' : ''}"
+				class="size-3.5 shrink-0 {majorOrders.refreshing ? 'animate-spin' : ''}"
 				fill="none"
 				stroke="currentColor"
 				stroke-width="1.8"
@@ -99,7 +99,7 @@
 				<path d="M13.5 8a5.5 5.5 0 1 1-1.6-3.9" />
 				<path d="M13.5 2.5v3h-3" />
 			</svg>
-			<span class="min-w-[6.5rem] text-left tabular-nums">
+			<span class="w-28 text-center whitespace-nowrap tabular-nums">
 				{majorOrders.refreshing ? c.busy : waiting ? c.wait(waitSeconds) : c.button}
 			</span>
 			{#if majorOrders.refreshing}
