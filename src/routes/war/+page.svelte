@@ -54,14 +54,13 @@
 			</Button>
 		</div>
 
-		{#if payload.stale}
-			<p role="status" class="border-l-2 border-danger pl-3 text-sm text-danger">
-				{t.staleNotice(formatClock(payload.fetchedAt))}
-			</p>
-		{:else if majorOrders.error}
-			<p role="alert" class="border-l-2 border-danger pl-3 text-sm text-danger">
-				{t.errors[majorOrders.error]}
-			</p>
+		{#if payload.stale || majorOrders.error}
+			<div role="status" class="border-l-2 border-danger pl-3 text-sm text-danger">
+				<p>{t.staleNotice(formatClock(payload.fetchedAt))}</p>
+				{#if majorOrders.error}
+					<p class="mt-1 text-text-muted">{t.errors[majorOrders.error]}</p>
+				{/if}
+			</div>
 		{/if}
 
 		{#if payload.orders.length === 0}

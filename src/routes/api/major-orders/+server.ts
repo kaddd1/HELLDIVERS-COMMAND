@@ -6,6 +6,12 @@ const CLIENT_NAME = 'Helldivers-Command-Center';
 /** The API requires a contact; override it with the HD2_API_CONTACT environment variable. */
 const DEFAULT_CONTACT = 'https://github.com/kaddd1/HELLDIVERS-COMMAND';
 
+/**
+ * Responses are never cached by browsers or a CDN: the server keeps its own short cache, and a
+ * shared cache here would serve stale orders after a manual refresh.
+ */
+const NO_STORE = { 'Cache-Control': 'no-store' };
+
 const source = createMajorOrdersSource({
 	fetch: (...args) => fetch(...args),
 	now: () => Date.now(),
@@ -17,16 +23,9 @@ export const GET: RequestHandler = async ({ url }) => {
 	const force = url.searchParams.has('refresh');
 	try {
 		const payload = await source.get(force);
-		const cacheable = !force && !payload.stale;
-		return json(payload, {
-			headers: {
-				'Cache-Control': cacheable
-					? 'public, max-age=0, s-maxage=60, stale-while-revalidate=120'
-					: 'no-store'
-			}
-		});
+		return json(payload, { headers: NO_STORE });
 	} catch (error) {
 		const failure = error instanceof UpstreamError ? error.reason : 'network';
-		return json({ error: failure }, { status: 503, headers: { 'Cache-Control': 'no-store' } });
+		return json({ error: failure }, { status: 503, headers: NO_STORE });
 	}
 };
