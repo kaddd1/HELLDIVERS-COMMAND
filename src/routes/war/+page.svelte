@@ -3,6 +3,7 @@
 	import PageHeading from '#lib/components/layout/PageHeading.svelte';
 	import Button from '#lib/components/ui/Button.svelte';
 	import EmptyState from '#lib/components/ui/EmptyState.svelte';
+	import RefreshControl from '#lib/components/war/RefreshControl.svelte';
 	import MajorOrderCard from '#lib/components/war/MajorOrderCard.svelte';
 	import { formatClock } from '#lib/format.ts';
 	import { ru } from '#lib/i18n/ru.ts';
@@ -40,19 +41,7 @@
 {:else}
 	{@const payload = majorOrders.payload}
 	<div class="space-y-6">
-		<div class="flex flex-wrap items-center justify-between gap-x-6 gap-y-3">
-			<p class="text-sm text-text-muted tabular-nums">
-				{t.updatedAt}: <span class="text-text">{formatClock(payload.fetchedAt)}</span>
-			</p>
-			<Button
-				variant="secondary"
-				size="sm"
-				disabled={majorOrders.refreshing}
-				onclick={() => majorOrders.load(true)}
-			>
-				{majorOrders.refreshing ? t.refreshing : t.refresh}
-			</Button>
-		</div>
+		<RefreshControl {tick} />
 
 		{#if payload.stale || majorOrders.error}
 			<div role="status" class="border-l-2 border-danger pl-3 text-sm text-danger">
@@ -68,7 +57,13 @@
 		{:else}
 			{#each payload.orders as order (order.id)}
 				<div class="animate-reveal">
-					<MajorOrderCard {order} {now} language={payload.language} />
+					<MajorOrderCard
+						{order}
+						{now}
+						language={payload.language}
+						pulse={majorOrders.pulse}
+						pulseToken={majorOrders.pulseToken}
+					/>
 				</div>
 			{/each}
 		{/if}

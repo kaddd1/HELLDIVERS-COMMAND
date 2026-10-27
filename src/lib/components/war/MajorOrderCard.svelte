@@ -6,6 +6,7 @@
 		counterShare,
 		orderState,
 		type MajorOrder,
+		type ProgressChange,
 		type OrderTask
 	} from '#lib/war/majorOrders.ts';
 	import Countdown from './Countdown.svelte';
@@ -16,9 +17,12 @@
 		now: number;
 		/** Language of the order texts as reported by the API. */
 		language: string | null;
+		/** Counters that just changed; they flash once. */
+		pulse?: ProgressChange[];
+		pulseToken?: number;
 	}
 
-	let { order, now, language }: Props = $props();
+	let { order, now, language, pulse = [], pulseToken = 0 }: Props = $props();
 
 	const t = ru.war;
 	const state = $derived(orderState(order, now));
@@ -108,10 +112,18 @@
 							{#if task.counter}
 								{@const share = counterShare(task.counter)}
 								<div class="mt-3 flex flex-wrap items-baseline justify-between gap-2 tabular-nums">
-									<p class="font-mono text-lg text-text">
-										{formatInt(task.counter.current)}
-										<span class="text-text-muted">/ {formatInt(task.counter.goal)}</span>
-									</p>
+									{#key pulseToken}
+										<p
+											class="font-mono text-lg text-text {pulse.some(
+												(p) => p.orderId === order.id && p.taskIndex === index
+											)
+												? 'animate-flash'
+												: ''}"
+										>
+											{formatInt(task.counter.current)}
+											<span class="text-text-muted">/ {formatInt(task.counter.goal)}</span>
+										</p>
+									{/key}
 									{#if share >= 1}
 										<Badge tone="accent">{t.tasks.done}</Badge>
 									{:else}

@@ -26,6 +26,10 @@ export const GET: RequestHandler = async ({ url }) => {
 		return json(payload, { headers: NO_STORE });
 	} catch (error) {
 		const failure = error instanceof UpstreamError ? error.reason : 'network';
-		return json({ error: failure }, { status: 503, headers: NO_STORE });
+		const retryAt = error instanceof UpstreamError ? error.retryAtMs : null;
+		return json(
+			{ error: failure, retryAt: retryAt === null ? null : new Date(retryAt).toISOString() },
+			{ status: 503, headers: NO_STORE }
+		);
 	}
 };

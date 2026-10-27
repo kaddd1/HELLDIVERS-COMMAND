@@ -184,3 +184,56 @@ export function remainingTime(expiresAt: string | null, nowMs: number): Remainin
 		totalMs
 	};
 }
+
+export interface ProgressChange {
+	orderId: number;
+	taskIndex: number;
+	faction: OrderTask['faction'];
+	kind: TaskKind;
+	/** Difference of the task counter; negative if the API reports a lower value than before. */
+	delta: number;
+}
+
+export interface OrderChanges {
+	progress: ProgressChange[];
+	/** Orders, goals, rewards or texts differ, not just the counters. */
+	structural: boolean;
+}
+
+/** Compares two lists of orders. The expiration is ignored: the API recomputes it on every request. */
+export function describeChanges(previous: MajorOrder[], next: MajorOrder[]): OrderChanges {
+	const progress: ProgressChange[] = [];
+	let structural = previous.length !== next.length;
+
+	for (const order of next) {
+		const before = previous.find((o) => o.id === order.id);
+		if (!before) {
+			structural = true;
+			continue;
+		}
+		if (
+			before.title !== order.title ||
+			before.briefing !== order.briefing ||
+			before.description !== order.description ||
+			before.tasks.length !== order.tasks.length ||
+			JSON.stringify(before.rewards) !== JSON.stringify(order.rewards)
+		) {
+			structural = true;
+		}
+		order.tasks.forEach((task, taskIndex) => {
+			const old = before.tasks[taskIndex];
+			if (!old || !task.counter || !old.counter) return;
+			if (task.counter.goal !== old.counter.goal || task.type !== old.type) structural = true;
+			else if (task.counter.current !== old.counter.current) {
+				progress.push({
+					orderId: order.id,
+					taskIndex,
+					faction: task.faction,
+					kind: task.kind,
+					delta: task.counter.current - old.counter.current
+				});
+			}
+		});
+	}
+	return { progress, structural };
+}

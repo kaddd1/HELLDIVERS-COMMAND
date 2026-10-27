@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import {
 	counterShare,
+	describeChanges,
 	normalizeAssignments,
 	orderState,
 	remainingTime,
@@ -202,5 +203,40 @@ describe('remainingTime', () => {
 		expect(a.minutes).toBe(1);
 		expect(b.minutes).toBe(0);
 		expect(b.seconds).toBe(59);
+	});
+});
+
+describe('describeChanges', () => {
+	const base = normalizeAssignments(LIVE_ASSIGNMENTS);
+	const copy = (): MajorOrder[] => JSON.parse(JSON.stringify(base));
+
+	it('reports no changes for identical data, ignoring the recomputed expiration', () => {
+		const next = copy();
+		next[0].expiresAt = '2026-10-29T10:54:30.000Z';
+		expect(describeChanges(base, next)).toEqual({ progress: [], structural: false });
+	});
+
+	it('reports counter growth per task', () => {
+		const next = copy();
+		next[0].tasks[0].counter!.current += 1234;
+		const changes = describeChanges(base, next);
+		expect(changes.structural).toBe(false);
+		expect(changes.progress).toEqual([
+			{ orderId: 568917260, taskIndex: 0, faction: 'terminids', kind: 'eradicate', delta: 1234 }
+		]);
+	});
+
+	it('reports structural changes: new order, changed goal, changed reward', () => {
+		const added = [...copy(), { ...copy()[0], id: 2 }];
+		expect(describeChanges(base, added).structural).toBe(true);
+		expect(describeChanges(base, [])).toMatchObject({ structural: true });
+
+		const goal = copy();
+		goal[0].tasks[1].counter!.goal += 1;
+		expect(describeChanges(base, goal).structural).toBe(true);
+
+		const reward = copy();
+		reward[0].rewards = [{ type: 1, amount: 50 }];
+		expect(describeChanges(base, reward).structural).toBe(true);
 	});
 });

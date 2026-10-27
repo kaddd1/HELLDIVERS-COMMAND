@@ -113,3 +113,13 @@ const clock = new Intl.DateTimeFormat(LOCALE, { dateStyle: 'short', timeStyle: '
 export function formatClock(iso: string): string {
 	return clock.format(new Date(iso));
 }
+
+/** Age of data as "только что", "12 с назад", "3 мин назад". */
+export function formatAge(ms: number): string {
+	const t = ru.war.control.ago;
+	const seconds = Math.floor(Math.max(0, ms) / 1000);
+	if (seconds < 3) return t.now;
+	if (seconds < 60) return t.seconds(seconds);
+	if (seconds < 3600) return t.minutes(Math.floor(seconds / 60));
+	return t.hours(Math.floor(seconds / 3600));
+}

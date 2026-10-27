@@ -463,9 +463,27 @@ export const ru = {
 		orderNumber: (id: number) => `Приказ № ${id}`,
 		loading: 'Получение приказов Верховного командования…',
 		updatedAt: 'Данные обновлены',
-		refresh: 'Обновить',
 		refreshing: 'Обновление…',
 		retry: 'Повторить',
+		control: {
+			button: 'Обновить',
+			busy: 'Обновление…',
+			wait: (seconds: number) => `Через ${seconds} с`,
+			ago: {
+				now: 'только что',
+				seconds: (n: number) => `${n} с назад`,
+				minutes: (n: number) => `${n} мин назад`,
+				hours: (n: number) => `${n} ч назад`
+			},
+			more: (n: number) => `и ещё ${n}`,
+			results: {
+				updated: (list: string) => `Получены свежие данные. Прогресс: ${list}.`,
+				structure: 'Получены свежие данные: состав или условия приказа изменились.',
+				unchanged: 'Получены свежие данные. Прогресс не изменился.',
+				cached: (age: string) =>
+					`Новых данных нет: свежие данные получены ${age}. Сервис опрашивается не чаще раза в 15 секунд.`
+			}
+		},
 		source: 'Источник: Helldivers 2 Community API. Данные неофициальные и могут запаздывать.',
 		empty: {
 			title: 'Активных приказов нет',

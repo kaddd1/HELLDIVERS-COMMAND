@@ -108,6 +108,65 @@ describe('createMajorOrdersSource', () => {
 		await expect(source.get()).rejects.toBeInstanceOf(UpstreamError);
 	});
 
+	it('marks cached answers so the client does not present them as fresh', async () => {
+		const { source, advance } = setup([ok]);
+		const first = await source.get();
+		expect(first.fromCache).toBe(false);
+		advance(5_000);
+		const second = await source.get(true);
+		expect(second.fromCache).toBe(true);
+		expect(second.fetchedAt).toBe(first.fetchedAt);
+	});
+
+	it('tells when a refresh would reach the API again', async () => {
+		const { source } = setup([ok]);
+		const payload = await source.get();
+		expect(Date.parse(payload.nextRefreshAt)).toBe(Date.parse(payload.fetchedAt) + 15_000);
+	});
+
+	it('pauses requests after a rate limit, honouring Retry-After', async () => {
+		const { source, fetchMock, advance } = setup([
+			ok,
+			() => response({}, { status: 429, headers: { 'retry-after': '40' } }),
+			ok
+		]);
+		await source.get();
+		advance(120_000);
+		const limited = await source.get();
+		expect(limited.failure).toBe('rate-limit');
+		expect(limited.stale).toBe(true);
+		expect(Date.parse(limited.nextRefreshAt)).toBe(Date.parse(limited.serverNow) + 40_000);
+
+		advance(20_000);
+		const during = await source.get(true);
+		expect(during.failure).toBe('rate-limit');
+		expect(fetchMock).toHaveBeenCalledTimes(2);
+
+		advance(21_000);
+		const after = await source.get(true);
+		expect(after.failure).toBeNull();
+		expect(fetchMock).toHaveBeenCalledTimes(3);
+	});
+
+	it('reports when to retry if the API fails and nothing is cached', async () => {
+		const { source } = setup([() => response({}, { status: 429 })]);
+		await expect(source.get()).rejects.toMatchObject({
+			reason: 'rate-limit',
+			retryAtMs: 1_030_000
+		});
+	});
+
+	it('backs off briefly after any failure instead of hammering the API', async () => {
+		const { source, fetchMock, advance } = setup([() => response({}, { status: 500 }), ok]);
+		await expect(source.get()).rejects.toMatchObject({ reason: 'status' });
+		advance(2_000);
+		await expect(source.get()).rejects.toMatchObject({ reason: 'rate-limit' });
+		expect(fetchMock).toHaveBeenCalledTimes(1);
+		advance(4_000);
+		expect((await source.get()).failure).toBeNull();
+		expect(fetchMock).toHaveBeenCalledTimes(2);
+	});
+
 	it('returns an empty list when there are no active orders', async () => {
 		const { source } = setup([() => response([])]);
 		expect((await source.get()).orders).toEqual([]);
