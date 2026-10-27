@@ -33,7 +33,10 @@ export function loadEcharts(): Promise<typeof EChartsCore> {
 		core.use([
 			charts.LineChart,
 			charts.BarChart,
+			charts.RadarChart,
+			charts.PieChart,
 			components.GridComponent,
+			components.RadarComponent,
 			components.TooltipComponent,
 			components.LegendComponent,
 			components.DataZoomComponent,

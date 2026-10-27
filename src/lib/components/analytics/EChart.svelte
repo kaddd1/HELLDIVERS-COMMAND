@@ -25,7 +25,13 @@
 				if (disposed || !host) return;
 				chart = echarts.init(host, 'command-center', { renderer: 'canvas' });
 				status = 'ready';
-				observer = new ResizeObserver(() => chart?.resize());
+				// The observer also fires once right after observe(); resizing then would cut the entrance animation short.
+				observer = new ResizeObserver(() => {
+					if (!chart || !host) return;
+					if (chart.getWidth() !== host.clientWidth || chart.getHeight() !== host.clientHeight) {
+						chart.resize();
+					}
+				});
 				observer.observe(host);
 			})
 			.catch(() => {

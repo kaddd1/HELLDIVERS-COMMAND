@@ -541,5 +541,199 @@ export const ru = {
 			unknown: (type: number) => `Награда (код ${type})`,
 			none: 'Награда в данных не указана.'
 		}
+	},
+	intelligence: {
+		title: 'Combat Intelligence',
+		subtitle: 'Боевой профиль',
+		modes: { label: 'Анализ', career: 'Вся карьера', period: 'Период' },
+		periodHint:
+			'Режим «Период» появится, когда сохранено минимум два снимка без сброса статистики.',
+		career: {
+			heading: 'Боевой портрет',
+			basis: (date: string, missions: string, time: string) =>
+				`По последнему снимку от ${date}: заданий ${missions}, время в заданиях ${time}.`,
+			scope:
+				'Это средние значения и доли за всю карьеру. Игра не передаёт данные по отдельным заданиям, поэтому разброс между заданиями здесь не показывается. Цифры описывают ваш стиль и не являются рейтингом навыка.',
+			lowSample: 'Сыграно мало заданий, поэтому средние значения пока ненадёжны.',
+			traits: 'Ключевые характеристики',
+			preferences: 'Предпочтения',
+			facts: 'Особенности стиля',
+			noData: 'Нет данных',
+			gauges: {
+				accuracy: {
+					name: 'Точность',
+					caption: (hits: string, shots: string) => `${hits} попаданий из ${shots} выстрелов`
+				},
+				success: {
+					name: 'Выполнение заданий',
+					caption: (done: string, played: string) => `${done} из ${played} заданий`
+				},
+				extraction: {
+					name: 'Эвакуации',
+					caption: (done: string, played: string) => `${done} успешных на ${played} заданий`
+				}
+			},
+			numbers: {
+				kd: { name: 'Убийств на смерть', caption: 'K/D за всю карьеру' },
+				killsPerMission: {
+					name: 'Убийств за задание',
+					caption: (deaths: string) => `и ${deaths} смертей за задание`
+				},
+				pace: {
+					name: 'Убийств в минуту',
+					caption: (minutes: string) => `в среднем ${minutes} мин на задание`
+				}
+			}
+		},
+		preferences: {
+			show: 'Распределение по',
+			tabs: { factions: 'Фракции', methods: 'Способы', stratagems: 'Стратагемы' },
+			center: { factions: 'убийств', methods: 'убийств', stratagems: 'стратагем' },
+			aria: (name: string) => `Диаграмма распределения: ${name}`,
+			none: 'Для этой группы недостаточно данных.',
+			otherNote:
+				'«Прочее» в способах убийства: всё, что не относится к гранатам, ближнему бою и «Орлу» (обычное оружие и остальные средства).'
+		},
+		facts: {
+			/** Each fact is a key figure and a short explanation, so rows line up. */
+			favoriteFaction: {
+				figure: (share: string) => share,
+				label: (part: string) => `убийств приходится на фракцию «${part}»`
+			},
+			evenFactions: { figure: 'Поровну', label: 'убийства распределены между фракциями' },
+			killsPerDeath: { figure: (value: string) => value, label: 'убийств на каждую смерть' },
+			hitsPer100: { figure: (n: number) => `${n} из 100`, label: 'выстрелов попадают в цель' },
+			missionLength: {
+				figure: (minutes: string) => `${minutes} мин`,
+				label: (perMinute: string | null) =>
+					perMinute
+						? `в среднем на одно задание, около ${perMinute} врагов в минуту`
+						: 'в среднем на одно задание'
+			},
+			failedMissions: {
+				figure: (oneIn: number) => `1 из ${oneIn}`,
+				label: (failed: string) => `заданий не завершено (всего ${failed})`
+			},
+			allMissionsCompleted: { figure: '100 %', label: 'сыгранных заданий выполнено' },
+			methodShare: {
+				figure: (oneIn: number) => `1 из ${oneIn}`,
+				label: (how: string) => `убийств сделано ${how}`
+			},
+			methodHow: { grenades: 'гранатами', melee: 'в ближнем бою', eagle: '«Орлом»' },
+			friendlyFire: {
+				figure: (oneIn: number) => `1 из ${oneIn}`,
+				label: (count: string) => `убийств пришлось по своим (всего ${count})`
+			},
+			noFriendlyFire: { figure: '0', label: 'убитых своих' },
+			stratagems: {
+				figure: (perMission: string) => perMission,
+				label: (favorite: string | null, share: string | null) =>
+					favorite && share
+						? `стратагем за задание, чаще всего «${favorite}» (${share})`
+						: 'стратагем за задание'
+			},
+			objectives: { figure: (n: string) => n, label: 'целей за задание' },
+			samples: { figure: (n: string) => n, label: 'образцов за задание' }
+		},
+		period: {
+			label: 'Период',
+			baseline: 'Сравнивать с',
+			baselines: { career: 'Моим средним до периода', previous: 'Предыдущим периодом' },
+			wholePeriod: 'Весь период (от первого до последнего снимка)',
+			periodLabel: (from: string, to: string) => `${from} — ${to}`,
+			periodMeta: (missions: string) => `заданий: ${missions}`,
+			lead: 'Сравнение выбранного периода с вашим обычным уровнем. Периоды считаются по разнице между снимками. Индекс 100 на диаграмме означает «как обычно»: это сравнение с самим собой, а не оценка навыка.',
+			noise:
+				'Отклонение считается заметным, только если оно больше шума: не менее 10 %, и тем больше, чем меньше заданий в периоде.',
+			changes: {
+				title: 'Что изменилось',
+				usual: 'Обычно',
+				verdict: {
+					higher: 'выше обычного',
+					lower: 'ниже обычного',
+					same: 'как обычно',
+					unknown: 'мало данных'
+				}
+			},
+			noPeriods: {
+				title: 'Нет периодов для анализа',
+				text: 'Между соседними снимками есть возможный сброс или ошибка распознавания. Разберитесь с ними на странице «Данные».'
+			}
+		},
+		radar: {
+			title: 'Профиль периода',
+			baselineName: 'Ваш обычный уровень (100)',
+			periodName: 'Выбранный период',
+			scaleNote:
+				'Внешнее кольцо соответствует индексу 200, всё выше обрезано. Точные значения в подсказке.',
+			tooFew: 'Для диаграммы нужно минимум три надёжных показателя.',
+			aria: (n: number) => `Радарная диаграмма профиля, показателей: ${n}`,
+			tooltipRow: (value: string, index: number, baseline: string) =>
+				`${value} (индекс ${index}, обычно ${baseline})`
+		},
+		metrics: {
+			aggression: { name: 'Агрессия', unit: 'убийств за задание' },
+			pace: { name: 'Темп', unit: 'убийств в час' },
+			risk: { name: 'Риск', unit: 'смертей за задание' },
+			accuracy: { name: 'Точность', unit: 'попаданий на выстрел' },
+			success: { name: 'Результативность', unit: 'доля выполненных заданий' },
+			objectives: { name: 'Цели', unit: 'целей за задание' },
+			stratagems: { name: 'Поддержка', unit: 'стратагем за задание' },
+			extractions: { name: 'Эвакуации', unit: 'эвакуаций за задание' },
+			kd: { name: 'K/D', unit: 'убийств на смерть' },
+			friendlyFire: { name: 'Огонь по своим', unit: 'убитых своих на 1000 убийств' },
+			samples: { name: 'Образцы', unit: 'образцов за задание' },
+			xpPerHour: { name: 'Опыт', unit: 'опыта в час' }
+		},
+		composition: {
+			period: 'Период',
+			baseline: 'Обычно',
+			lifetime: 'За карьеру',
+			none: 'Для этой группы недостаточно данных.',
+			title: 'Состав в периоде',
+			groups: {
+				factions: 'Убийства по фракциям',
+				methods: 'Способы убийства',
+				stratagems: 'Применение стратагем'
+			},
+			parts: {
+				bugs: 'Жуки',
+				automatons: 'Автоматоны',
+				illuminate: 'Просветлённые',
+				grenades: 'Гранаты',
+				melee: 'Ближний бой',
+				eagle: 'Орёл',
+				orbital: 'Орбитальные',
+				defensive: 'Защитные',
+				supply: 'Снабжение',
+				reinforcement: 'Подкрепление',
+				other: 'Прочее'
+			}
+		},
+		insights: {
+			title: 'Наблюдения',
+			disclaimer:
+				'Наблюдения описывают, чем период отличается от вашего обычного уровня. Они не оценивают мастерство: на цифры влияют сложность, снаряжение и команда.',
+			style: {
+				riskier: 'Убийств и смертей за задание больше обычного: темп стал рискованнее.',
+				efficient:
+					'Убийств за задание больше обычного, а смертей не больше: бой стал результативнее.',
+				costlier: 'Смертей за задание больше обычного, а убийств не больше.',
+				calmer: 'И убийств, и смертей за задание меньше обычного: темп стал спокойнее.'
+			},
+			metric: (
+				name: string,
+				direction: 'higher' | 'lower',
+				period: string,
+				baseline: string,
+				percent: string
+			) =>
+				`${name}: ${period} против обычных ${baseline}, ${direction === 'higher' ? 'выше' : 'ниже'} на ${percent}.`,
+			shift: (group: string, part: string, grew: boolean, from: string, to: string) =>
+				`${group}: доля «${part}» ${grew ? 'выросла' : 'снизилась'} с ${from} до ${to}.`,
+			stable: 'Заметных отклонений от вашего обычного профиля нет.',
+			notEnough: (n: number) =>
+				`Надёжно сравнить удалось показателей: ${n}. Для выводов нужно больше заданий в периоде.`
+		}
 	}
 } as const;

@@ -9,6 +9,7 @@
 		type RangeId
 	} from '#lib/analytics/history.ts';
 	import FactionSection from '#lib/components/analytics/FactionSection.svelte';
+	import CombatIntelligence from '#lib/components/intelligence/CombatIntelligence.svelte';
 	import LifetimeTotals from '#lib/components/analytics/LifetimeTotals.svelte';
 	import ProgressSection from '#lib/components/analytics/ProgressSection.svelte';
 	import RatioSection from '#lib/components/analytics/RatioSection.svelte';
@@ -59,6 +60,7 @@
 	</EmptyState>
 {:else if career.active.length === 1 && career.latest}
 	<div class="space-y-6">
+		<CombatIntelligence active={career.active} />
 		<EmptyState title={t.single.title} text={t.single.text} />
 		<Panel title={t.single.current}>
 			<LifetimeTotals snapshot={career.latest} />
@@ -73,6 +75,10 @@
 				linkLabel={t.issues.link}
 			/>
 		{/if}
+
+		<div class="animate-reveal">
+			<CombatIntelligence active={career.active} />
+		</div>
 
 		<div class="flex flex-wrap items-end justify-between gap-4">
 			<SegmentedControl

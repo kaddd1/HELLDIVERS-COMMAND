@@ -21,6 +21,28 @@
 	--animate-scan: scan 2.4s ease-in-out infinite;
 	--animate-flash: flash 1.8s ease-out both;
 	--animate-slide: slide 1.1s ease-in-out infinite;
+	--animate-row: row 0.45s cubic-bezier(0.2, 0.8, 0.2, 1) both;
+	--animate-grow: grow 0.7s cubic-bezier(0.2, 0.8, 0.2, 1) both;
+
+	@keyframes row {
+		from {
+			opacity: 0;
+			transform: translateX(16px);
+		}
+		to {
+			opacity: 1;
+			transform: none;
+		}
+	}
+
+	@keyframes grow {
+		from {
+			transform: scaleX(0);
+		}
+		to {
+			transform: scaleX(1);
+		}
+	}
 
 	@keyframes flash {
 		from {
@@ -68,10 +90,67 @@
 	}
 
 	body {
-		background-color: var(--color-bg);
 		color: var(--color-text);
 		font-family: var(--font-sans);
 		-webkit-font-smoothing: antialiased;
+	}
+
+	/*
+	 * Static backdrop: warm corner light, a fine tactical grid, topographic contours and a vignette.
+	 * It sits behind everything, never repaints, and stays faint so text on it remains readable.
+	 */
+	body::before {
+		content: '';
+		position: fixed;
+		inset: 0;
+		z-index: -1;
+		pointer-events: none;
+		background:
+			radial-gradient(ellipse at center, transparent 50%, rgb(0 0 0 / 0.4) 100%),
+			radial-gradient(60rem 38rem at 88% -6%, rgb(242 194 0 / 0.075), transparent 70%),
+			radial-gradient(48rem 34rem at -8% 104%, rgb(242 194 0 / 0.045), transparent 70%),
+			linear-gradient(to right, rgb(242 194 0 / 0.07) 1px, transparent 1px) 0 0 / 240px 240px,
+			linear-gradient(to bottom, rgb(242 194 0 / 0.07) 1px, transparent 1px) 0 0 / 240px 240px,
+			linear-gradient(to right, rgb(255 255 255 / 0.028) 1px, transparent 1px) 0 0 / 48px 48px,
+			linear-gradient(to bottom, rgb(255 255 255 / 0.028) 1px, transparent 1px) 0 0 / 48px 48px,
+			url('/topo.svg') right -8vw top 4vh / min(95vw, 1200px) auto no-repeat,
+			var(--color-bg);
+		opacity: 1;
+	}
+
+	/* Corner brackets, like the frame of a targeting display. */
+	body::after {
+		content: '';
+		position: fixed;
+		inset: 10px;
+		z-index: -1;
+		pointer-events: none;
+		--bracket: rgb(242 194 0 / 0.3);
+		background:
+			linear-gradient(var(--bracket), var(--bracket)) top left / 26px 1px no-repeat,
+			linear-gradient(var(--bracket), var(--bracket)) top left / 1px 26px no-repeat,
+			linear-gradient(var(--bracket), var(--bracket)) top right / 26px 1px no-repeat,
+			linear-gradient(var(--bracket), var(--bracket)) top right / 1px 26px no-repeat,
+			linear-gradient(var(--bracket), var(--bracket)) bottom left / 26px 1px no-repeat,
+			linear-gradient(var(--bracket), var(--bracket)) bottom left / 1px 26px no-repeat,
+			linear-gradient(var(--bracket), var(--bracket)) bottom right / 26px 1px no-repeat,
+			linear-gradient(var(--bracket), var(--bracket)) bottom right / 1px 26px no-repeat;
+	}
+
+	@media (max-width: 640px) {
+		body::before {
+			background:
+				radial-gradient(ellipse at center, transparent 50%, rgb(0 0 0 / 0.4) 100%),
+				radial-gradient(40rem 28rem at 90% -6%, rgb(242 194 0 / 0.075), transparent 70%),
+				linear-gradient(to right, rgb(255 255 255 / 0.028) 1px, transparent 1px) 0 0 / 40px 40px,
+				linear-gradient(to bottom, rgb(255 255 255 / 0.028) 1px, transparent 1px) 0 0 / 40px 40px,
+				url('/topo.svg') right -40vw top 2vh / 140vw auto no-repeat,
+				var(--color-bg);
+		}
+
+		body::after {
+			display: none;
+		}
 	}
 
 	:focus-visible {

@@ -99,7 +99,7 @@
 				<path d="M13.5 8a5.5 5.5 0 1 1-1.6-3.9" />
 				<path d="M13.5 2.5v3h-3" />
 			</svg>
-			<span class="w-28 text-center whitespace-nowrap tabular-nums">
+			<span class="whitespace-nowrap tabular-nums">
 				{majorOrders.refreshing ? c.busy : waiting ? c.wait(waitSeconds) : c.button}
 			</span>
 			{#if majorOrders.refreshing}
