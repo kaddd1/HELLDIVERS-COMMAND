@@ -106,3 +106,10 @@ export function formatElapsed(seconds: number): string {
 	if (hours >= 1) return ru.analytics.comparison.hours(integer.format(Math.round(hours)));
 	return ru.analytics.comparison.minutes(integer.format(Math.max(1, Math.round(seconds / 60))));
 }
+
+const clock = new Intl.DateTimeFormat(LOCALE, { dateStyle: 'short', timeStyle: 'medium' });
+
+/** Date and time with seconds, e.g. for "last updated". */
+export function formatClock(iso: string): string {
+	return clock.format(new Date(iso));
+}
