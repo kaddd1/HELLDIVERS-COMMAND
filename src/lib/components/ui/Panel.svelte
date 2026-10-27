@@ -10,7 +10,7 @@
 	let { title, children, actions }: Props = $props();
 </script>
 
-<section class="border border-line bg-surface">
+<section class="flex h-full flex-col border border-line bg-surface">
 	{#if title || actions}
 		<header class="flex items-center justify-between gap-4 border-b border-line px-4 py-3">
 			{#if title}
@@ -21,7 +21,7 @@
 			{@render actions?.()}
 		</header>
 	{/if}
-	<div class="p-4">
+	<div class="flex flex-1 flex-col justify-center p-4">
 		{@render children()}
 	</div>
 </section>
