@@ -18,9 +18,20 @@
 
 	function measure(): void {
 		const active = track?.querySelector<HTMLElement>('label[data-active="true"]');
-		box = active
-			? { x: active.offsetLeft, y: active.offsetTop, w: active.offsetWidth, h: active.offsetHeight }
-			: null;
+		// getBoundingClientRect (not offsetLeft/offsetWidth) keeps the highlight sub-pixel accurate,
+		// so it doesn't creep past the button's edge under non-integer display scaling.
+		if (!active || !track) {
+			box = null;
+			return;
+		}
+		const trackRect = track.getBoundingClientRect();
+		const activeRect = active.getBoundingClientRect();
+		box = {
+			x: activeRect.left - trackRect.left - track.clientLeft,
+			y: activeRect.top - trackRect.top - track.clientTop,
+			w: activeRect.width,
+			h: activeRect.height
+		};
 	}
 
 	$effect(() => {
