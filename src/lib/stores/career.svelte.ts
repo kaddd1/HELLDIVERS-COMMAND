@@ -16,6 +16,18 @@ import type {
 
 type Status = 'idle' | 'loading' | 'ready' | 'error';
 
+/**
+ * Asks the browser not to evict the database under storage pressure (and, in Safari, after
+ * a week without visits). Best effort: the answer is not needed and failures are ignored.
+ */
+function requestPersistentStorage(): void {
+	try {
+		void navigator.storage?.persist?.().catch(() => undefined);
+	} catch {
+		// Not supported here; data is still saved, just without the extra protection.
+	}
+}
+
 export interface NewSnapshot {
 	displayName: string;
 	stats: PlayerStats;
@@ -76,6 +88,7 @@ class CareerStore {
 		await saveProfileAndSnapshots(profile, [snapshot]);
 		this.profile = profile;
 		this.snapshots = sortSnapshots([...this.snapshots, snapshot]);
+		requestPersistentStorage();
 		return 'saved';
 	}
 
@@ -117,6 +130,7 @@ class CareerStore {
 		await saveProfileAndSnapshots(usableProfile, plan.toAdd);
 		if (usableProfile) this.profile = usableProfile;
 		this.snapshots = sortSnapshots([...this.snapshots, ...plan.toAdd]);
+		requestPersistentStorage();
 		return plan.toAdd.length;
 	}
 }

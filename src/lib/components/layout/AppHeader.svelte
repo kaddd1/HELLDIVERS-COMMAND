@@ -16,7 +16,7 @@
 </script>
 
 <header class="border-b border-line bg-surface">
-	<div class="mx-auto flex max-w-6xl flex-col gap-3 px-4 py-4 md:flex-row md:items-center md:gap-8">
+	<div class="mx-auto flex max-w-6xl flex-col gap-3 px-4 py-4 lg:flex-row lg:items-center lg:gap-8">
 		<a href={resolve('/')} class="shrink-0">
 			<span class="block font-display text-lg font-bold tracking-widest text-accent">
 				{ru.app.name}
@@ -24,8 +24,9 @@
 			<span class="block text-xs text-text-muted">{ru.app.tagline}</span>
 		</a>
 
-		<nav aria-label={ru.nav.label} class="-mx-4 overflow-x-auto px-4 md:mx-0 md:ml-auto md:px-0">
-			<ul class="flex gap-1">
+		<!-- Wraps instead of scrolling, so no section is hidden off-screen on narrow screens. -->
+		<nav aria-label={ru.nav.label} class="-mx-3 lg:mx-0 lg:ml-auto">
+			<ul class="flex flex-wrap gap-x-1">
 				{#each links as link (link.href)}
 					<li>
 						<a

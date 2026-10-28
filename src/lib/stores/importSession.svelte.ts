@@ -71,6 +71,9 @@ export class ImportSession {
 	markReset = $state(false);
 	saveState = $state<SaveState>('idle');
 
+	/** The running OCR worker, so leaving the page can stop it instead of letting it finish. */
+	private engine: { terminate(): Promise<void> } | null = null;
+
 	resolved = $derived(
 		this.merged
 			? resolveStats(this.merged.stats, { values: this.decisions, confirmed: this.confirmed })
@@ -222,11 +225,10 @@ export class ImportSession {
 		this.phase = 'scanning';
 		this.scanning = -1;
 
-		let engine: { terminate(): Promise<void> } | null = null;
 		try {
 			const { createBrowserEngine } = await import('../import/ocr.ts');
 			const browserEngine = await createBrowserEngine();
-			engine = browserEngine;
+			this.engine = browserEngine;
 			this.progress = ENGINE_SHARE;
 
 			const analyses: ScreenshotAnalysis[] = [];
@@ -264,8 +266,14 @@ export class ImportSession {
 		} catch {
 			this.fail('engine');
 		} finally {
-			await engine?.terminate().catch(() => undefined);
+			await this.stopEngine();
 		}
+	}
+
+	private async stopEngine(): Promise<void> {
+		const engine = this.engine;
+		this.engine = null;
+		await engine?.terminate().catch(() => undefined);
 	}
 
 	/** Uses the recognized name when it is trustworthy, otherwise the saved profile name. */
@@ -332,5 +340,6 @@ export class ImportSession {
 
 	destroy(): void {
 		for (const slot of this.slots) if (slot.previewUrl) URL.revokeObjectURL(slot.previewUrl);
+		void this.stopEngine();
 	}
 }

@@ -43,7 +43,8 @@
 		document.body.append(link);
 		link.click();
 		link.remove();
-		URL.revokeObjectURL(url);
+		// Revoking right away can cancel the download in some browsers (notably Safari).
+		setTimeout(() => URL.revokeObjectURL(url), 10_000);
 		message = { text: t.done(career.snapshots.length), tone: 'ok' };
 	}
 

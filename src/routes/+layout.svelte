@@ -9,6 +9,7 @@
 
 <svelte:head>
 	<title>{ru.app.name}</title>
+	<meta name="description" content={ru.app.description} />
 </svelte:head>
 
 <a

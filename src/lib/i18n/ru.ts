@@ -9,7 +9,9 @@ function num(value: string | number): string {
 export const ru = {
 	app: {
 		name: 'HELLDIVERS // COMMAND CENTER',
-		tagline: 'Личная разведывательная сводка'
+		tagline: 'Личная разведывательная сводка',
+		description:
+			'Личная статистика Helldivers 2 из скриншотов карьеры: графики, сравнение снимков и главные приказы Галактической войны.'
 	},
 	nav: {
 		label: 'Основная навигация',
@@ -38,10 +40,20 @@ export const ru = {
 	},
 	common: {
 		skipToContent: 'Перейти к содержимому',
-		inDevelopment: 'Раздел в разработке',
 		noValue: '—',
 		notProvided: 'Не указано',
 		loading: 'Загрузка данных…'
+	},
+	error: {
+		notFound: {
+			title: 'Страница не найдена',
+			text: 'Такого адреса на сайте нет. Возможно, ссылка устарела или в ней опечатка.'
+		},
+		other: {
+			title: 'Что-то пошло не так',
+			text: 'Страницу не удалось показать. Обновите её или вернитесь позже.'
+		},
+		home: 'На главную'
 	},
 	career: {
 		level: 'Уровень',

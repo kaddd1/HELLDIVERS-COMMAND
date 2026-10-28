@@ -87,7 +87,8 @@
 						</div>
 					</div>
 
-					<div class="flex flex-wrap gap-2">
+					<!-- On phones the buttons take their own row, aligned with the text above. -->
+					<div class="flex flex-wrap gap-2 max-sm:basis-full max-sm:pl-8">
 						<Button variant="secondary" size="sm" onclick={() => oninspect(snapshot)}>
 							{t.inspect}
 						</Button>
